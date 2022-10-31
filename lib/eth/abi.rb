@@ -410,7 +410,7 @@ module Eth
       raise EncodingError, "Expecting #{type.components.size} elements: #{arg}" unless arg.size == type.components.size
 
       static_size = 0
-      type.components.each do |component|
+      type.components.each_with_index do |component, i|
         if type.components[i].is_dynamic?
           static_size += 32
         else
@@ -426,8 +426,8 @@ module Eth
         component_type = type.components[i]
         if component_type.is_dynamic?
           offsets_and_static_values << encode_type(Type.size_type, dynamic_offset)
-          dynamic_value << encode_type(component_type, arg.is_a?(Array) ? arg[i] : arg[component_type.name])
-          dynamic_offset += dynamic_value.size
+          dynamic_values << encode_type(component_type, arg.is_a?(Array) ? arg[i] : arg[component_type.name])
+          dynamic_offset += dynamic_values.size
         else
           offsets_and_static_values << encode_type(component_type, arg.is_a?(Array) ? arg[i] : arg[component_type.name])
         end
